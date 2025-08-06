@@ -3,17 +3,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
-    ports:
-      - "7001:80"
+    container_name: lasm_app
+#    ports:
+#      - "7001:8000"
     volumes:
       - ./laravel:/app
     depends_on:
       - postgres
-
+  node:
+    image: node:22.18.0-alpine3.22
+    container_name: lasm_nodejs
+    working_dir : /app
+    volumes:
+      - ./laravel:/app
+    tty: true
+    stdin_open: true
   postgres:
     image: postgres:15
-    container_name: posgres
+    container_name: lasm_postgres
     restart: always
     ports:
       - "7002:5432"
@@ -22,7 +29,16 @@ services:
       POSTGRES_USER: master
       POSTGRES_PASSWORD: password
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
-
+      - .pg_data:/var/lib/postgresql/data
+  nginx:
+    image: nginx:alpine
+    container_name: lasm_nginx
+    ports:
+      - "7003:80"
+    volumes:
+      - ./laravel:/var/www/
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
 volumes:
   pg_data:
