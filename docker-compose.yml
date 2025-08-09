@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.laravel
     container_name: lasm_app
 #    ports:
 #      - "7001:8000"
@@ -13,7 +13,9 @@ services:
     networks:
       - network-lasm
   node:
-    image: node:22.18.0-alpine3.22
+    build:
+      context: .
+      dockerfile: Dockerfile.node
     container_name: lasm_nodejs
     working_dir : /app
     volumes:
@@ -36,8 +38,8 @@ services:
       - network-lasm
   nginx:
     build:
-      context : ./nginx
-      dockerfile : Dockerfile
+      context : .
+      dockerfile : Dockerfile.nginx
     container_name: lasm_nginx
     ports:
       - "7003:80"
