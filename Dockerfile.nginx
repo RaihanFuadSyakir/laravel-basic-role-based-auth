@@ -7,7 +7,7 @@ WORKDIR /app
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy custom Nginx config into place
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80

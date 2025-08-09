@@ -1,11 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::get('/', fn() => view('welcome'));
+Route::get('/', function () {
+    return Inertia::render('Welcome');
+})->name('home');
 
-Route::get('/dashboard', fn() => view('dashboard'))
-    ->middleware(['auth', 'permission:view_dashboard']);
+Route::get('dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/manage-users', fn() => view('manage-users'))
-    ->middleware(['auth', 'permission:manage_users']);
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
