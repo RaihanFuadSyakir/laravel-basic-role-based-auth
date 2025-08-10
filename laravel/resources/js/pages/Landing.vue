@@ -32,8 +32,8 @@
           </p>
         </div>
         <!-- Image placeholder -->
-        <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center">
-          <span class="text-gray-400">[Image or Illustration Here]</span>
+        <div class="rounded-xl h-64 flex items-center justify-center">
+          <img src="@/assets/illustration/undraw_vault_tyfh.svg" alt="Description of image" class="w-full h-full object-contain rounded-xl"/>
         </div>
       </div>
     </section>
@@ -42,8 +42,8 @@
     <section class="py-20 bg-gray-50">
       <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         <!-- Image -->
-        <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center">
-          <span class="text-gray-400">[Role-based Access Image]</span>
+        <div class="rounded-xl h-64 flex items-center justify-center">
+          <img src="@/assets/illustration/undraw_safe_0mei.svg" alt="Description of image" class="w-full h-full object-contain rounded-xl"/>
         </div>
         <!-- Text -->
         <div>
@@ -68,8 +68,8 @@
           </p>
         </div>
         <!-- Image -->
-        <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center">
-          <span class="text-gray-400">[Asset Tracking Image]</span>
+        <div class="rounded-xl h-64 flex items-center justify-center">
+          <img src="@/assets/illustration/undraw_online-everywhere_4t8u.svg" alt="Description of image" class="w-full h-full object-contain rounded-xl" />
         </div>
       </div>
     </section>
@@ -78,8 +78,8 @@
     <section class="py-20 bg-gray-50">
       <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         <!-- Image -->
-        <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center">
-          <span class="text-gray-400">[Lifecycle Management Image]</span>
+        <div class="rounded-xl h-64 flex items-center justify-center">
+          <img src="@/assets/illustration/undraw_timeline_2gfy.svg" alt="Description of image" class="w-full h-full object-contain rounded-xl"/>
         </div>
         <!-- Text -->
         <div>
@@ -103,8 +103,8 @@
           </p>
         </div>
         <!-- Image -->
-        <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center">
-          <span class="text-gray-400">[Dashboard Image]</span>
+        <div class="rounded-xl h-64 flex items-center justify-center">
+          <img src="@/assets/illustration/undraw_business-decisions_3x2a.svg" alt="Description of image" class="w-full h-full object-contain rounded-xl"/>
         </div>
       </div>
     </section>
