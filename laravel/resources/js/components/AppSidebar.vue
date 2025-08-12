@@ -34,12 +34,8 @@ const footerNavItems: NavItem[] = [
     <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
             <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
-                            <AppLogo />
-                        </Link>
-                    </SidebarMenuButton>
+                <SidebarMenuItem size="lg" as-child>
+                    <NavUser/>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
@@ -50,7 +46,6 @@ const footerNavItems: NavItem[] = [
 
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
-            <NavUser />
         </SidebarFooter>
     </Sidebar>
     <slot />

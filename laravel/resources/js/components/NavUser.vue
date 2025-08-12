@@ -9,6 +9,7 @@ import UserMenuContent from './UserMenuContent.vue';
 
 const page = usePage();
 const user = page.props.auth.user as User;
+const roles = page.props.auth.roles;
 const { isMobile, state } = useSidebar();
 </script>
 
@@ -18,7 +19,7 @@ const { isMobile, state } = useSidebar();
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                        <UserInfo :user="user" />
+                        <UserInfo :user="user" :roles="roles || []" />
                         <ChevronsUpDown class="ml-auto size-4" />
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -28,7 +29,7 @@ const { isMobile, state } = useSidebar();
                     align="end"
                     :side-offset="4"
                 >
-                    <UserMenuContent :user="user" />
+                    <UserMenuContent :user="user" :roles="roles || []"/>
                 </DropdownMenuContent>
             </DropdownMenu>
         </SidebarMenuItem>
