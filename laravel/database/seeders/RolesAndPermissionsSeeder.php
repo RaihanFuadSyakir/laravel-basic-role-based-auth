@@ -15,32 +15,21 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [
-            'view_dashboard',
-            'manage_users',
-            'manage_assets'
-        ];
+        $viewAssets = Permission::firstOrCreate(['name' => 'view_assets']);
+        $editAssets = Permission::firstOrCreate(['name' => 'edit_assets']);
 
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm]);
-        }
+        // Create role
+        $manager = Role::firstOrCreate(['name' => 'Manager','level' => 1]);
+        $manager->permissions()->sync([$viewAssets->id, $editAssets->id]);
 
-        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
-        $managerRole = Role::firstOrCreate(['name' => 'Manager']);
-
-        $adminRole->permissions()->sync(Permission::pluck('id')->toArray());
-        $managerRole->permissions()->sync(
-            Permission::whereIn('name', ['view_dashboard', 'manage_assets'])->pluck('id')->toArray()
-        );
-
-        $admin = User::firstOrCreate(
+        $user = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Master Admin',
                 'password' => Hash::make('password')
             ]
         );
-
-        $admin->roles()->sync([$adminRole->id]);
+        // Assign role to user
+        $user->roles()->sync([$manager->id]);
     }
 }

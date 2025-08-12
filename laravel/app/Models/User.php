@@ -6,7 +6,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -52,13 +51,21 @@ class User extends Authenticatable
 
     public function permissions()
     {
-        return $this->roles()->with('permissions')->get()
-            ->pluck('permissions')->flatten()->unique('id');
+        return $this->roles->load('permissions')
+            ->pluck('permissions')
+            ->flatten()
+            ->pluck('name')
+            ->unique();
     }
 
     public function hasPermission($permission)
     {
-        return $this->permissions()->contains('name', $permission);
+        return $this->permissions()->contains($permission);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles->pluck('name')->contains($role);
     }
 }
 
