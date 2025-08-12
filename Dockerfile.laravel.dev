@@ -8,7 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git unzip zip curl libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
     && docker-php-ext-install \
-        pdo pdo_mysql pgsql pdo_pgsql mbstring zip exif pcntl bcmath gd
+        pdo pdo_mysql pgsql pdo_pgsql mbstring zip exif pcntl bcmath gd intl
 
 # Install Node.js (v22) + npm
 RUN curl -fsSL https://nodejs.org/dist/v22.18.0/node-v22.18.0-linux-x64.tar.xz -o node.tar.xz \
