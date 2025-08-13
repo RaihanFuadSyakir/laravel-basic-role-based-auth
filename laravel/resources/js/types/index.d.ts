@@ -24,10 +24,14 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
     sidebarOpen: boolean;
 };
 
+export interface Role {
+    permissions : string[]
+};
 export interface User {
     id: number;
     name: string;
     email: string;
+    roles? : Role[];
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;
