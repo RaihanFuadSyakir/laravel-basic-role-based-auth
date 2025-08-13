@@ -1,0 +1,25 @@
+<script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Role, type BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/vue3';
+import { roleColumns } from '@/components/datatables/roles_column';
+import DataTable from '@/components/datatables/DataTable.vue';
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Manage Roles',
+        href: '/manage_roles',
+    },
+];
+    const props = defineProps({roles : Array});
+    const roles = props.roles as Role[];
+    console.log(roles[0]);
+</script>
+<template>
+    <Head title="Manage Roles" />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
+            <DataTable :columns="roleColumns" :data="roles" />
+        </div>
+    </AppLayout>
+</template>

@@ -25,7 +25,8 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
 };
 
 export interface Role {
-    permissions : string[]
+    name : string;
+    permissions : string[];
 };
 export interface User {
     id: number;
