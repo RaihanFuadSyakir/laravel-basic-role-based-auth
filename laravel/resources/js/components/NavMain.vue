@@ -1,27 +1,44 @@
 <script setup lang="ts">
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import {
+    Sidebar,
+    SidebarHeader,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem
+    } from '@/components/ui/sidebar';
+import { type NavItem, type NavGroup} from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-
+import Collapsible from './ui/collapsible/Collapsible.vue';
+import CollapsibleTrigger from './ui/collapsible/CollapsibleTrigger.vue';
+import CollapsibleContent from './ui/collapsible/CollapsibleContent.vue';
 defineProps<{
-    items: NavItem[];
+    items: NavGroup[];
 }>();
 
 const page = usePage();
 </script>
 
 <template>
-    <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
-        <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton as-child :is-active="item.href === page.url" :tooltip="item.title">
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-    </SidebarGroup>
+    <Collapsible defaultOpen v-for="item in items" :key="item.title">
+        <SidebarGroup class="px-2 py-0">
+            <SidebarGroupLabel>
+                <CollapsibleTrigger>{{item.title}}</CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+                <SidebarMenu>
+                    <SidebarMenuItem v-for="child in item.childs" :key="child.title">
+                        <SidebarMenuButton as-child :is-active="child.href === page.url" :tooltip="child.title">
+                            <Link :href="child.href">
+                                <component :is="child.icon" />
+                                <span>{{ child.title }}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </CollapsibleContent>
+        </SidebarGroup>
+    </Collapsible>
 </template>
