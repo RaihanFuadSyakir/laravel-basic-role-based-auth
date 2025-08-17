@@ -9,7 +9,16 @@ use Inertia\Inertia;
 class UserController extends Controller
 {
     public function index(){
-        $users = User::all();
-        return Inertia::render('users/ManageUser', ['users' => $users]);
+        $users = User::with('roles')->get();
+        $result = [];
+        foreach($users as $user){
+            $result [] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name')->toArray()
+            ];
+        }
+        return Inertia::render('users/ManageUser', ['users' => $result]);
     }
 }

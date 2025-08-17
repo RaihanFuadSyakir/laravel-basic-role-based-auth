@@ -11,6 +11,7 @@ import TableRow from '@/components/ui/table/TableRow.vue';
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  actions?: (row: TData) => any;
 }>();
 const table = useVueTable({
   get data() { return props.data },
@@ -24,7 +25,7 @@ const table = useVueTable({
     <Table>
       <TableHeader>
         <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-          <TableHead v-for="header in headerGroup.headers" :key="header.id">
+          <TableHead class="text-center" v-for="header in headerGroup.headers" :key="header.id">
             <FlexRender
               v-if="!header.isPlaceholder"
               :render="header.column.columnDef.header"
@@ -40,7 +41,7 @@ const table = useVueTable({
             v-for="row in table.getRowModel().rows"
             :key="row.id"
           >
-            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+            <TableCell class="text-center" v-for="cell in row.getVisibleCells()" :key="cell.id">
               <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
             </TableCell>
           </TableRow>
