@@ -4,7 +4,7 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type NavGroup } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, LockKeyhole,UserCheck, Users} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
@@ -25,22 +25,39 @@ const mainNavItems: NavGroup[] = [
             {
                 title: 'Manage Users',
                 href: '/manage_users',
-                icon: Users
+                icon: Users,
+                permission : 'view_users'
             },
             {
                 title: 'Manage Roles',
                 href: '/manage_roles',
-                icon: UserCheck
+                icon: UserCheck,
+                permission : 'view_roles'
             },
             {
                 title: 'Manage Permissions',
                 href: '/manage_permissions',
-                icon: LockKeyhole
+                icon: LockKeyhole,
+                permission : 'view_permissions'
             },
         ]
     }
 ];
+const page = usePage();
+const permissions = page.props.auth.permissions;
+const filteredNavItems = mainNavItems
+  .map(group => {
+    const visibleChildren = group.childs?.filter(
+      child =>
+        !child.permission || permissions.includes(child.permission)
+    )
 
+    return {
+      ...group,
+      childs: visibleChildren,
+    }
+  })
+  .filter(group => (group.childs?.length ?? 0) > 0);
 const footerNavItems: NavItem[] = [
     {
         title: 'Github Repo',
