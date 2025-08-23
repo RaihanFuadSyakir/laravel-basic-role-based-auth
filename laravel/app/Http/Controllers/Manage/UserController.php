@@ -21,4 +21,15 @@ class UserController extends Controller
         }
         return Inertia::render('users/ManageUser', ['users' => $result]);
     }
+    public function update(Request $request){
+        $validated = $request->validate([
+            'id' => 'required|integer',
+            'name' => 'required|string|min:2|max:50',
+            'email' => 'required|email'
+        ]);
+        $user = User::findOrFail($validated['id']);
+        $user->update($validated);
+        return redirect()->route('manage_users')
+             ->with('success', 'User updated successfully');
+    }
 }

@@ -5,7 +5,6 @@ import { usePage } from '@inertiajs/vue3';
 interface Props {
     variant?: 'header' | 'sidebar';
 }
-
 defineProps<Props>();
 
 const isOpen = usePage().props.sidebarOpen;

@@ -9,19 +9,20 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Landing');
 })->name('home');
+Route::middleware(['auth','verified'])->group(function(){
+    Route::get('dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+    Route::get('manage_users', [UserController::class,'index'])
+            ->name('manage_users')
+            ->middleware('permission:view_users');
+    Route::post('update_users', [UserController::class,'update'])
+            ->middleware('permission:edit_users');
+    Route::get('manage_permissions', [PermissionController::class,'index'])
+            ->middleware('permission:view_permissions');
+    Route::get('manage_roles', [RoleController::class,'index'])
+            ->middleware('permission:view_roles');
+});
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware(['auth','verified','permission:view_users'])->group(function(){
-    Route::get('manage_users', [UserController::class,'index']);
-});
-Route::middleware(['auth','verified','permission:view_permissions'])->group(function(){
-    Route::get('manage_permissions', [PermissionController::class,'index']);
-});
-Route::middleware(['auth','verified','permission:view_roles'])->group(function(){
-    Route::get('manage_roles', [RoleController::class,'index']);
-});
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
