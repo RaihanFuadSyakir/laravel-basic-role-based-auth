@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dialog';
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,53 +23,45 @@ import {
 } from '@/components/ui/form/index';
 import { toast } from 'vue-sonner';
 import { Input } from '@/components/ui/input'
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
 import { useForm, configure } from 'vee-validate';
 import { UserPlus } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
-const formSchema = toTypedSchema(
-  z.object({
-    id : z.number(),
-    name: z
-      .string()
-      .min(2, { message: 'Name must be at least 2 characters' })
-      .max(50, { message: 'Name must be less than 50 characters' }),
-    email: z
-      .string()
-      .email({ message: 'Please enter a valid email address' }),
-  })
-)
+import { formCreateSchema, formUpdateSchema } from './users_schema';
+import CreateUser from './CreateUser.vue';
 configure({
   validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
   validateOnModelUpdate: true, // controls if `update:modelValue` events should trigger validation with `handleChange` handler
 });
-const form = useForm({
-  validationSchema: formSchema,
+const formUpdate = useForm({
+  validationSchema: formUpdateSchema,
   initialValues: {
     id : 0,
     name: '',
     email: '',
+    change_password : false,
+    password : '',
+    confirmPassword : ''
+
   },
-})
-const handleSubmit = (mode: 'create' | 'update', e: Event) => {
-  form.handleSubmit((values) => {
+});
+
+const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
     router.post(`/update_users`,values,{
         onSuccess : () => {
             toast.success('User updated successfully');
             router.reload({ only: ['users'] });
             isEditOpen.value = false;
+            formUpdate.resetForm();
         },
         onError : (e) => {
-            console.log(e);
+            toast.error('Update unexpected error');
         }
     })
 
-  })(e)
-}
+  })
 function editUser(user: User) {
     editUserTarget.value = user;
-    form.setValues({
+    formUpdate.setValues({
         id : editUserTarget.value.id,
         name : editUserTarget.value.name,
         email : editUserTarget.value.email
@@ -83,7 +74,8 @@ function deleteUser(id: number) {
   // e.g. router.delete(`/users/${id}`)
 }
 const page = usePage<AppPageProps & { users: User[] }>()
-const users = computed(() => page.props.users)
+const users = computed(() => page.props.users);
+const isCreateOpen = ref(false);
 const isEditOpen = ref(false);
 const editUserTarget = ref<User|null>(null);
 const columns = userColumns({ onEdit: editUser, onDelete: deleteUser });
@@ -103,7 +95,12 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="grid md:grid-cols-2">
                 <div class="">a</div>
                 <div class="px-2 flex justify-end">
-                    <Button variant="outline" size="icon" class="bg-green-700 hover:bg-green-600">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        class="bg-green-700 hover:bg-green-600"
+                        @click="isCreateOpen = true"
+                        >
                         <UserPlus class="text-white w-4 h-4"/>
                     </Button>
                 </div>
@@ -112,13 +109,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <DataTable :columns="columns" :data="users" />
             </div>
         </div>
-
+        <CreateUser v-model:isFormOpen="isCreateOpen" />
         <Dialog v-model:open="isEditOpen">
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Edit User</DialogTitle>
               </DialogHeader>
-              <form @submit.prevent="(e : Event) => handleSubmit('update', e)">
+              <form @submit.prevent="handleUpdateSubmit">
                 <FormField v-slot="{ componentField }" name="name">
                   <FormItem class="mb-2">
                     <FormLabel>Name</FormLabel>

@@ -18,6 +18,8 @@ Route::middleware(['auth','verified'])->group(function(){
             ->middleware('permission:view_users');
     Route::post('update_users', [UserController::class,'update'])
             ->middleware('permission:edit_users');
+    Route::post('create_users', [UserController::class,'create'])
+            ->middleware('permission:edit_users');
     Route::get('manage_permissions', [PermissionController::class,'index'])
             ->middleware('permission:view_permissions');
     Route::get('manage_roles', [RoleController::class,'index'])

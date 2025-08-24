@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manage;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 class UserController extends Controller
 {
@@ -20,6 +21,17 @@ class UserController extends Controller
             ];
         }
         return Inertia::render('users/ManageUser', ['users' => $result]);
+    }
+    public function create(Request $request){
+        $validated = $request->validate([
+            'name' => 'required|string|min:2|max:50',
+            'email' => 'required|email',
+            'password' => 'required|min:8|max:100'
+        ]);
+        $validated['password'] = Hash::make($validated['password']);
+        $user = User::create($validated);
+        return redirect()->route('manage_users')
+             ->with('success', 'User created successfully');
     }
     public function update(Request $request){
         $validated = $request->validate([
