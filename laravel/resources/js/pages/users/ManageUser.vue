@@ -6,7 +6,8 @@ import { User } from '@/types';
 import { userColumns } from '@/components/datatables/users_column';
 import DataTable from '@/components/datatables/DataTable.vue';
 import { computed, ref } from 'vue';
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
+import { Eye,EyeOff } from 'lucide-vue-next';
 import {
     Dialog,
     DialogContent,
@@ -20,13 +21,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form/index';
+} from '@/components/ui/form';
 import { toast } from 'vue-sonner';
 import { Input } from '@/components/ui/input'
 import { useForm, configure } from 'vee-validate';
 import { UserPlus } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
-import { formCreateSchema, formUpdateSchema } from './users_schema';
+import {formUpdateSchema } from './users_schema';
 import CreateUser from './CreateUser.vue';
 configure({
   validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
@@ -41,7 +42,6 @@ const formUpdate = useForm({
     change_password : false,
     password : '',
     confirmPassword : ''
-
   },
 });
 
@@ -64,7 +64,7 @@ function editUser(user: User) {
     formUpdate.setValues({
         id : editUserTarget.value.id,
         name : editUserTarget.value.name,
-        email : editUserTarget.value.email
+        email : editUserTarget.value.email,
     });
     isEditOpen.value = true;
 }
@@ -77,6 +77,8 @@ const page = usePage<AppPageProps & { users: User[] }>()
 const users = computed(() => page.props.users);
 const isCreateOpen = ref(false);
 const isEditOpen = ref(false);
+const showPassword = ref(false);
+const showConfirm = ref(false);
 const editUserTarget = ref<User|null>(null);
 const columns = userColumns({ onEdit: editUser, onDelete: deleteUser });
 const breadcrumbs: BreadcrumbItem[] = [
@@ -134,6 +136,71 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <FormMessage />
                   </FormItem>
                 </FormField>
+                  <!-- Change Password Checkbox -->
+                <FormField v-slot="{ componentField }" name="change_password" type="checkbox">
+                  <FormItem class="flex items-center gap-2 mb-2">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        class="mr-2"
+                        :checked="componentField.value"
+                        @change="componentField.onChange($event.target.checked)"
+                      />
+                    </FormControl>
+                    <FormLabel>Change Password</FormLabel>
+                  </FormItem>
+                </FormField>
+                <div v-if="formUpdate.values.change_password">
+                    <!-- Password -->
+                    <FormField v-slot="{ componentField }" name="password">
+                      <FormItem class="mb-2">
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div class="relative">
+                            <Input
+                              :type="showPassword ? 'text' : 'password'"
+                              placeholder="********"
+                              v-bind="componentField"
+                            />
+                            <Button
+                              variant="ghost"
+                              class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                              @click="showPassword = !showPassword"
+                            >
+                                <Eye v-if="showPassword" class="w-4 h-4" />
+                                <EyeOff v-else class="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+
+                    <!-- Confirm Password -->
+                    <FormField v-slot="{ componentField }" name="confirmPassword">
+                      <FormItem class="mb-2">
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <div class="relative">
+                            <Input
+                              :type="showConfirm ? 'text' : 'password'"
+                              placeholder="********"
+                              v-bind="componentField"
+                            />
+                            <Button
+                              variant="ghost"
+                              class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                              @click="showConfirm = !showConfirm"
+                            >
+                                <Eye v-if="showConfirm" class="w-4 h-4" />
+                                <EyeOff v-else class="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+                </div>
                 <DialogFooter>
                     <Button variant="outline" class="bg-green-700 hover:bf-green-600 text-white" type="submit">Save changes</Button>
                 </DialogFooter>

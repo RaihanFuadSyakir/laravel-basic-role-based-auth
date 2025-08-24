@@ -18,6 +18,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Eye,EyeOff } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ref, watch } from 'vue';
 const props = defineProps<{ isFormOpen: boolean }>();
@@ -100,7 +101,8 @@ const showConfirm = ref(false);
                           class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500"
                           @click="showPassword = !showPassword"
                         >
-                          {{ showPassword ? 'E' : '👁️' }}
+                            <Eye v-if="showPassword" class="w-4 h-4" />
+                            <EyeOff v-else class="w-4 h-4" />
                         </Button>
                       </div>
                     </FormControl>
@@ -124,7 +126,8 @@ const showConfirm = ref(false);
                           class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500"
                           @click="showConfirm = !showConfirm"
                         >
-                          {{ showConfirm ? 'E' : '👁️' }}
+                            <Eye v-if="showConfirm" class="w-4 h-4" />
+                            <EyeOff v-else class="w-4 h-4" />
                         </Button>
                       </div>
                     </FormControl>
