@@ -10,8 +10,9 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 class UserController extends Controller
 {
-    public function index(){
-        $users = User::with('roles')->get();
+    public function index(Request $request){
+        $perPage = $request->input('per_page', 10);
+        $users = User::with('roles')->paginate($perPage)->appends($request->all());
         $result = [];
         foreach($users as $user){
             $result [] = [
@@ -21,7 +22,15 @@ class UserController extends Controller
                 'roles' => $user->roles->pluck('name')->toArray()
             ];
         }
-        return Inertia::render('users/ManageUser', ['users' => $result]);
+        $toSend = [
+            'users' => $result,
+            'pagination' => [
+                'total' => $users->total(),
+                'currentPage' => $users->currentPage(),
+                'lastPage' => $users->lastPage()
+            ]
+        ];
+        return Inertia::render('users/ManageUser', $toSend);
     }
     public function create(Request $request){
         $validated = $request->validate([

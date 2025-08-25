@@ -1,7 +1,7 @@
 
 <script setup lang="ts" generic="TData, TValue">
 import type { ColumnDef, SortingState } from '@tanstack/vue-table';
-import { FlexRender, getCoreRowModel, useVueTable,getSortedRowModel } from '@tanstack/vue-table';
+import { FlexRender, getCoreRowModel, useVueTable,getSortedRowModel} from '@tanstack/vue-table';
 import Table from '@/components/ui/table/Table.vue';
 import TableBody from '@/components/ui/table/TableBody.vue';
 import TableCell from '@/components/ui/table/TableCell.vue';

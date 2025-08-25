@@ -22,6 +22,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination/index"
 import { toast } from 'vue-sonner';
 import { Input } from '@/components/ui/input'
 import { useForm, configure } from 'vee-validate';
@@ -73,7 +81,19 @@ function deleteUser(id: number) {
   console.log("Deleting user:", id)
   // e.g. router.delete(`/users/${id}`)
 }
-const page = usePage<AppPageProps & { users: User[] }>()
+const page = usePage<AppPageProps & {
+  users: User[],
+  pagination: {
+    total: number,
+    currentPage: number,
+    lastPage: number
+  }
+}>();
+const pagination = computed(() => page.props.pagination);
+const goToPage = (page: number) => {
+  if (page < 1 || page > pagination.value.lastPage) return
+  router.get('/manage_users', { page }, { preserveState: true, preserveScroll: true })
+}
 const users = computed(() => page.props.users);
 const isCreateOpen = ref(false);
 const isEditOpen = ref(false);
@@ -107,8 +127,41 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </Button>
                 </div>
             </div>
-            <div class="flex h-full flex-1 flex-col gap-4 rounded-xl overflow-x-auto">
+            <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto">
                 <DataTable :columns="columns" :data="users" />
+            </div>
+            <div v-if="pagination" class="flex justify-end">
+                <Pagination
+                  v-slot="{ page }"
+                  :items-per-page="10"
+                  :total="pagination.total"
+                  :default-page="pagination.currentPage"
+                >
+                  <PaginationContent v-slot="{ items }">
+                    <PaginationPrevious
+                      :disabled="pagination.currentPage === 1"
+                      @click="goToPage(pagination.currentPage - 1)"
+                    />
+
+                    <template v-for="(item, index) in items" :key="index">
+                      <PaginationItem
+                        v-if="item.type === 'page'"
+                        :value="item.value"
+                        :is-active="item.value === pagination.currentPage"
+                        @click="goToPage(item.value)"
+                      >
+                        {{ item.value }}
+                      </PaginationItem>
+                    </template>
+
+                    <PaginationEllipsis v-if="pagination.lastPage > 5" />
+
+                    <PaginationNext
+                      :disabled="pagination.currentPage === pagination.lastPage"
+                      @click="goToPage(pagination.currentPage + 1)"
+                    />
+                  </PaginationContent>
+                </Pagination>
             </div>
         </div>
         <CreateUser v-model:isFormOpen="isCreateOpen" />
