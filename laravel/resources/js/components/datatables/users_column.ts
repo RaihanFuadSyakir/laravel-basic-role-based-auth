@@ -3,24 +3,39 @@ import { h } from 'vue';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { User } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from "lucide-vue-next"
+import { Pencil, Trash2, ArrowUpDown, ChevronDown } from "lucide-vue-next";
 export const userColumns = ({ onEdit, onDelete }:
     { onEdit: (user: User) => void;
       onDelete: (id: number) => void
     }): ColumnDef<User>[] => [
   {
     accessorKey: 'name',
-    header: () => h('div', { class: 'font-medium' }, 'Name'),
+    header: ({ column }) => {
+        return h(Button, {
+            variant: 'ghost',
+            onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }, () => ['Name', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
     cell: ({ row }) => h('div', {}, row.getValue('name')),
   },
   {
     accessorKey: 'email',
-    header: () => h('div', { class: 'font-medium' }, 'Email'),
-    cell: ({ row }) => h('div', {}, row.getValue('email')),
+    header: ({ column }) => {
+        return h(Button, {
+            variant: 'ghost',
+            onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }, () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
   },
   {
     accessorKey: 'roles',
-    header: () => h('div', { class: 'font-medium' }, 'Roles'),
+    header: ({ column }) => {
+        return h(Button, {
+            variant: 'ghost',
+            onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }, () => ['Roles', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
     cell: ({ row }) => {
     const roles = row.getValue('roles') as string[] | null | undefined;
 
