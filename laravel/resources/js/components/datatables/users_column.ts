@@ -4,6 +4,12 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { User } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, ArrowUpDown, ChevronDown } from "lucide-vue-next";
+import UserRoles from '@/components/UserRoles.vue'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 export const userColumns = ({ onEdit, onDelete }:
     { onEdit: (user: User) => void;
       onDelete: (id: number) => void
@@ -38,13 +44,7 @@ export const userColumns = ({ onEdit, onDelete }:
     },
     cell: ({ row }) => {
     const roles = row.getValue('roles') as string[] | null | undefined;
-
-    // If roles is nullish or an empty array, show fallback.
-    if (!roles || roles.length === 0) {
-      return h('div', { class: 'text-sm text-muted-foreground' }, '—');
-    }
-
-    return h('div', {}, roles.join(', '));
+    return h(UserRoles, { roles })
     },
   },
   {

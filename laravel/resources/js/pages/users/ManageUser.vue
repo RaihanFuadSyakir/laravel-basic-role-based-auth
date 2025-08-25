@@ -114,7 +114,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
-            <div class="grid md:grid-cols-2">
+            <div class="grid md:grid-cols-2 mb-2">
                 <div class="">a</div>
                 <div class="px-2 flex justify-end">
                     <Button
@@ -127,7 +127,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </Button>
                 </div>
             </div>
-            <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto">
+            <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto mb-2">
                 <DataTable :columns="columns" :data="users" />
             </div>
             <div v-if="pagination" class="flex justify-end">
