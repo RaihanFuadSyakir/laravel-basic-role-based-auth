@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm, configure } from 'vee-validate';
-import { formCreateSchema} from './users_schema';
+import { formCreateSchema} from '@/lib/users/users_schema';
 import { router } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
 import Input from '@/components/ui/input/Input.vue';
