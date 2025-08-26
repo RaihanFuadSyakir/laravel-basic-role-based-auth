@@ -5,14 +5,11 @@ import { User } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, ArrowUpDown, ChevronDown } from "lucide-vue-next";
 import UserRoles from '@/components/UserRoles.vue'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-export const userColumns = ({ onEdit, onDelete }:
-    { onEdit: (user: User) => void;
-      onDelete: (id: number) => void
+export const userColumns = ({hasEditPermission ,onEdit, onDelete }:
+    {
+      hasEditPermission : Boolean;
+      onEdit: (user: User) => void;
+      onDelete: (id: number) => void;
     }): ColumnDef<User>[] => [
   {
     accessorKey: 'name',
@@ -47,7 +44,7 @@ export const userColumns = ({ onEdit, onDelete }:
     return h(UserRoles, { roles })
     },
   },
-  {
+  ...(hasEditPermission ? [{
     id: "actions", // no accessorKey since it's not from data
     header: () => h("div", { class: "font-medium" }, "Actions"),
     cell: ({ row }) => {
@@ -76,5 +73,5 @@ export const userColumns = ({ onEdit, onDelete }:
         ),
       ])
     },
-  },
+  }] : []),
 ];

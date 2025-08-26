@@ -71,9 +71,13 @@ const page = usePage<AppPageProps & {
     total: number,
     currentPage: number,
     lastPage: number
-  }
+  },
+  permissions : string[]
 }>();
 const pagination = computed(() => page.props.pagination);
+const hasEditPermission = page.props.auth.permissions.some(
+  (perm: string) => perm === "edit_users"
+)
 const goToPage = (page: number) => {
   if (page < 1 || page > pagination.value.lastPage) return
   router.get('/manage_users', { page }, { preserveState: true, preserveScroll: true })
@@ -82,7 +86,7 @@ const users = computed(() => page.props.users);
 const isCreateOpen = ref(false);
 const isEditOpen = ref(false);
 const editUserTarget = ref<User|null>(null);
-const columns = userColumns({ onEdit: editUser, onDelete: deleteUser });
+const columns = userColumns({hasEditPermission : hasEditPermission,onEdit: editUser, onDelete: deleteUser });
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manage Users',
@@ -97,7 +101,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
             <div class="grid md:grid-cols-2 mb-2">
-                <div class="">a</div>
+                <div class="flex items-center">a</div>
                 <div class="px-2 flex justify-end">
                     <Button
                         variant="outline"
