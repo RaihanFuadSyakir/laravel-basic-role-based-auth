@@ -9,7 +9,7 @@ export const userColumns = ({hasEditPermission ,onEdit, onDelete }:
     {
       hasEditPermission : Boolean;
       onEdit: (user: User) => void;
-      onDelete: (id: number) => void;
+      onDelete: (user: User) => void;
     }): ColumnDef<User>[] => [
   {
     accessorKey: 'name',
@@ -67,7 +67,7 @@ export const userColumns = ({hasEditPermission ,onEdit, onDelete }:
             variant: "destructive",
             size: "sm",
             class : "bg-red-500 hover:bg-red-400",
-            onClick: () => onDelete(user.id),
+            onClick: () => onDelete(user),
           },
             { default: () => h(Trash2, { class: "w-4 h-4" }) }
         ),

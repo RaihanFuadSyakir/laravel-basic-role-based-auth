@@ -16,9 +16,11 @@ Route::middleware(['auth','verified'])->group(function(){
     Route::get('manage_users', [UserController::class,'index'])
             ->name('manage_users')
             ->middleware('permission:view_users');
-    Route::post('update_users', [UserController::class,'update'])
+    Route::put('users/{id}', [UserController::class,'update'])
             ->middleware('permission:edit_users');
-    Route::post('create_users', [UserController::class,'create'])
+    Route::post('users', [UserController::class,'create'])
+            ->middleware('permission:edit_users');
+    Route::delete('users/{id}', [UserController::class,'delete'])
             ->middleware('permission:edit_users');
     Route::get('manage_permissions', [PermissionController::class,'index'])
             ->middleware('permission:view_permissions');

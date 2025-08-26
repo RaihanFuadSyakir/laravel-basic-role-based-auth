@@ -15,6 +15,17 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination/index"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog/index"
 import { toast } from 'vue-sonner';
 import { useForm, configure } from 'vee-validate';
 import { UserPlus } from 'lucide-vue-next';
@@ -38,32 +49,48 @@ const formUpdate = useForm({
   },
 });
 const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
-    router.post(`/update_users`,values,{
+    router.put(`/users/${values.id}`,values,{
         onSuccess : () => {
             toast.success('User updated successfully');
             router.reload({ only: ['users'] });
             isEditOpen.value = false;
+            userTarget.value = null;
             formUpdate.resetForm();
         },
         onError : () => {
             toast.error('Update unexpected error');
         }
     })
-
   })
 function editUser(user: User) {
-    editUserTarget.value = user;
+    userTarget.value = user;
     formUpdate.setValues({
-        id : editUserTarget.value.id,
-        name : editUserTarget.value.name,
-        email : editUserTarget.value.email,
+        id : userTarget.value.id,
+        name : userTarget.value.name,
+        email : userTarget.value.email,
     });
     isEditOpen.value = true;
 }
 
-function deleteUser(id: number) {
-  console.log("Deleting user:", id)
+function deleteUser(user: User) {
+    userTarget.value = user;
+    confirmDelete.value = true;
   // e.g. router.delete(`/users/${id}`)
+}
+const handleDeleteSubmit = () =>{
+    if(userTarget.value){
+        router.delete(`/users/${userTarget.value.id}`,{
+            onSuccess : () => {
+                toast.success('User deleted successfully');
+                router.reload({ only: ['users'] });
+                confirmDelete.value = false;
+                userTarget.value = null;
+            },
+            onError : () => {
+                toast.error('Update unexpected error');
+            }
+        });
+    }
 }
 const page = usePage<AppPageProps & {
   users: User[],
@@ -85,7 +112,8 @@ const goToPage = (page: number) => {
 const users = computed(() => page.props.users);
 const isCreateOpen = ref(false);
 const isEditOpen = ref(false);
-const editUserTarget = ref<User|null>(null);
+const confirmDelete = ref(false);
+const userTarget = ref<User|null>(null);
 const columns = userColumns({hasEditPermission : hasEditPermission,onEdit: editUser, onDelete: deleteUser });
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -150,6 +178,20 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Pagination>
             </div>
         </div>
+        <AlertDialog v-model:open="confirmDelete">
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                Please confirm <span class="text-red-400">delete</span> user with name <span class="text-black">{{userTarget.name}}</span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction @click="handleDeleteSubmit">Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         <CreateUser v-model:isFormOpen="isCreateOpen" />
         <UpdateUser v-model="isEditOpen" :form-update="formUpdate" :on-submit="handleUpdateSubmit"/>
     </AppLayout>

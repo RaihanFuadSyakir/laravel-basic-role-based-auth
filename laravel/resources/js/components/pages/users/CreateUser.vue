@@ -44,7 +44,7 @@ const formCreate = useForm({
   },
 });
 const handleCreateSubmit = formCreate.handleSubmit((values) => {
-    router.post(`/create_users`,values,{
+    router.post(`/users`,values,{
         onSuccess : () => {
             toast.success('User created successfully');
             router.reload({ only: ['users'] });

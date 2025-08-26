@@ -13,7 +13,10 @@ class UserController extends Controller
 {
     public function index(Request $request){
         $perPage = $request->input('per_page', 10);
-        $users = User::with('roles')->paginate($perPage)->appends($request->all());
+        $users = User::with('roles')
+            ->where('id','!=',1)
+            ->paginate($perPage)
+            ->appends($request->all());
         $result = [];
         foreach($users as $user){
             $result [] = [
@@ -45,8 +48,9 @@ class UserController extends Controller
              ->with('success', 'User created successfully');
     }
     public function update(Request $request){
+        $request->merge(['id' => $id]);
         $validated = $request->validate([
-            'id' => 'required|integer',
+            'id' => 'required|integer|min:2|exists:users,id',
             'name' => 'required|string|min:2|max:50',
             'email' => 'required|email',
             'change_password' => 'required|boolean',
@@ -59,5 +63,22 @@ class UserController extends Controller
         $user->update($validated);
         return redirect()->route('manage_users')
              ->with('success', 'User updated successfully');
+    }
+    public function delete(Request $request, $id)
+    {
+
+        $request->merge(['id' => $id]);
+        $validated = $request->validate([
+            'id' => 'required|integer|min:2|exists:users,id',
+        ]);
+        // Find the user, or fail with 404
+        $user = User::findOrFail($id);
+
+        // Soft delete
+        $user->delete();
+
+        // Redirect back with success message
+        return redirect()->route('manage_users')
+            ->with('success', 'User deleted successfully');
     }
 }
