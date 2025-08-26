@@ -56,7 +56,10 @@ const sorting = ref<SortingState>([])
         </template>
         <template v-else>
           <TableRow>
-            <TableCell colspan="__cols__" class="h-24 text-center">
+            <TableCell
+              :colspan="columns.length"
+              class="h-full text-center"
+            >
               No results.
             </TableCell>
           </TableRow>
