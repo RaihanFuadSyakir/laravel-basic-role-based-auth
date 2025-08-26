@@ -25,7 +25,7 @@ const table = useVueTable({
     get sorting() { return sorting.value },
   },
 });
-const sorting = ref<SortingState>([])
+const sorting = ref<SortingState>([]);
 </script>
 
 <template>

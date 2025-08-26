@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,9 +14,18 @@ class UserController extends Controller
 {
     public function index(Request $request){
         $perPage = $request->input('per_page', 10);
+        $nameFilter = $request->query('name');
+        $emailFilter = $request->query('email');
+        $roles = Role::all()->pluck('name')->toArray();
         $users = User::with('roles')
-            ->where('id','!=',1)
-            ->paginate($perPage)
+            ->where('id','!=',1);
+        if($nameFilter){
+            $users = $users->where('name','like',"%{$nameFilter}%");
+        }
+        if($emailFilter){
+            $users = $users->where('email','like',"%{$emailFilter}%");
+        }
+        $users =  $users->paginate($perPage)
             ->appends($request->all());
         $result = [];
         foreach($users as $user){
@@ -28,6 +38,7 @@ class UserController extends Controller
         }
         $toSend = [
             'users' => $result,
+            'roles' => $roles,
             'pagination' => [
                 'total' => $users->total(),
                 'currentPage' => $users->currentPage(),

@@ -5,7 +5,7 @@ import { User } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, ArrowUpDown, ChevronDown } from "lucide-vue-next";
 import UserRoles from '@/components/UserRoles.vue'
-export const userColumns = ({hasEditPermission ,onEdit, onDelete }:
+export const userColumns = ({hasEditPermission , onEdit, onDelete }:
     {
       hasEditPermission : Boolean;
       onEdit: (user: User) => void;
@@ -14,10 +14,14 @@ export const userColumns = ({hasEditPermission ,onEdit, onDelete }:
   {
     accessorKey: 'name',
     header: ({ column }) => {
-        return h(Button, {
+        return h('div', { class: 'flex justify-center items-center' }, [
+          h('span', 'Name'),
+          h(Button, {
             variant: 'ghost',
+            class: 'ml-2',
             onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-        }, () => ['Name', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+          }, () => h(ArrowUpDown, { class: 'h-4 w-4' }))
+        ])
     },
     cell: ({ row }) => h('div', {}, row.getValue('name')),
   },

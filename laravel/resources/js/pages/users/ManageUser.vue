@@ -26,13 +26,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog/index"
+import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from "@/components/ui/tags-input"
 import { toast } from 'vue-sonner';
 import { useForm, configure } from 'vee-validate';
 import { UserPlus } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
 import {formUpdateSchema } from '@/lib/users/users_schema';
+import { Input } from '@/components/ui/input';
 import CreateUser from '@/components/pages/users/CreateUser.vue';
 import UpdateUser from '@/components/pages/users/UpdateUser.vue';
+import TagsCombobox from '@/components/TagsCombobox.vue';
 configure({
   validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
   validateOnModelUpdate: true, // controls if `update:modelValue` events should trigger validation with `handleChange` handler
@@ -94,6 +97,7 @@ const handleDeleteSubmit = () =>{
 }
 const page = usePage<AppPageProps & {
   users: User[],
+  roles : Array<string>,
   pagination: {
     total: number,
     currentPage: number,
@@ -102,19 +106,34 @@ const page = usePage<AppPageProps & {
   permissions : string[]
 }>();
 const pagination = computed(() => page.props.pagination);
+const users = computed(() => page.props.users);
+const rolesFilter = ref<string[]>([]);
+const roleOptions = page.props.roles.map(val => ({label : val, value : val}));
+const filters = ref<Record<string, string | string[]>>({});
 const hasEditPermission = page.props.auth.permissions.some(
   (perm: string) => perm === "edit_users"
 )
 const goToPage = (page: number) => {
   if (page < 1 || page > pagination.value.lastPage) return
-  router.get('/manage_users', { page }, { preserveState: true, preserveScroll: true })
+  router.get('/manage_users', { page : pagination.value.currentPage, ...filters.value }, { preserveState: true, preserveScroll: true })
 }
-const users = computed(() => page.props.users);
+function addFilter(key : string,value : string | Array<string>){
+    console.log(key);
+    console.log(value);
+   filters.value = {...filters.value,[key] : value};
+   console.log(filters.value);
+   router.get('/manage_users', { page : pagination.value.currentPage, ...filters.value }, { preserveState: true, preserveScroll: true })
+}
+
 const isCreateOpen = ref(false);
 const isEditOpen = ref(false);
 const confirmDelete = ref(false);
 const userTarget = ref<User|null>(null);
-const columns = userColumns({hasEditPermission : hasEditPermission,onEdit: editUser, onDelete: deleteUser });
+const columns = userColumns({
+    hasEditPermission : hasEditPermission,
+    onEdit: editUser,
+    onDelete: deleteUser
+});
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Manage Users',
@@ -128,17 +147,25 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
-            <div class="grid md:grid-cols-2 mb-2">
-                <div class="flex items-center">a</div>
-                <div class="px-2 flex justify-end">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        class="bg-green-700 hover:bg-green-600"
-                        @click="isCreateOpen = true"
-                        >
-                        <UserPlus class="text-white w-4 h-4"/>
-                    </Button>
+            <div class="px-2 flex justify-end">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    class="bg-green-700 hover:bg-green-600"
+                    @click="isCreateOpen = true"
+                    >
+                    <UserPlus class="text-white w-4 h-4"/>
+                </Button>
+            </div>
+            <div class="grid md:grid-cols-4">
+                <div class="flex justify-center">
+                    <Input type="text" class="m-2" placeholder="Filter By Name" @input="(e : any) => addFilter('name',e.target.value)"/>
+                </div>
+                <div class="flex justify-center">
+                    <Input type="text" class="m-2" placeholder="Filter By Email" @input="(e : any) => addFilter('email',e.target.value)"/>
+                </div>
+                <div class="flex justify-center">
+                    <!-- <TagsCombobox v-model="rolesFilter" @update:modelValue="(val) => console.log(rolesFilter)" :data="roleOptions" placeholder="Filter By Roles"/> -->
                 </div>
             </div>
             <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto mb-2">
