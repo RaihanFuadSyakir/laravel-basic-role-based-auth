@@ -16,6 +16,7 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $nameFilter = $request->query('name');
         $emailFilter = $request->query('email');
+        $rolesFilter = $request->query('roles');
         $roles = Role::all()->pluck('name')->toArray();
         $users = User::with('roles')
             ->where('id','!=',1);
@@ -24,6 +25,15 @@ class UserController extends Controller
         }
         if($emailFilter){
             $users = $users->where('email','like',"%{$emailFilter}%");
+        }
+        if ($rolesFilter) {
+            // Split the comma-separated string into an array
+            $rolesArray = explode(',', $rolesFilter);
+
+            // Filter users by roles
+            $users = $users->whereHas('roles', function ($query) use ($rolesArray) {
+                $query->whereIn('name', $rolesArray);
+            });
         }
         $users =  $users->paginate($perPage)
             ->appends($request->all());

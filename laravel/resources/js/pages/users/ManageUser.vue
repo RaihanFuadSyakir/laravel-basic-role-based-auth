@@ -5,7 +5,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { User } from '@/types';
 import { userColumns } from '@/components/datatables/users_column';
 import DataTable from '@/components/datatables/DataTable.vue';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
   Pagination,
@@ -24,9 +24,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog/index"
-import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from "@/components/ui/tags-input"
 import { toast } from 'vue-sonner';
 import { useForm, configure } from 'vee-validate';
 import { UserPlus } from 'lucide-vue-next';
@@ -108,7 +106,10 @@ const page = usePage<AppPageProps & {
 const pagination = computed(() => page.props.pagination);
 const users = computed(() => page.props.users);
 const rolesFilter = ref<string[]>([]);
-const roleOptions = page.props.roles.map(val => ({label : val, value : val}));
+watch(rolesFilter, (newVal) => {
+  addFilter("roles", newVal);
+})
+const roles = page.props.roles;
 const filters = ref<Record<string, string | string[]>>({});
 const hasEditPermission = page.props.auth.permissions.some(
   (perm: string) => perm === "edit_users"
@@ -117,11 +118,12 @@ const goToPage = (page: number) => {
   if (page < 1 || page > pagination.value.lastPage) return
   router.get('/manage_users', { page : pagination.value.currentPage, ...filters.value }, { preserveState: true, preserveScroll: true })
 }
-function addFilter(key : string,value : string | Array<string>){
-    console.log(key);
-    console.log(value);
-   filters.value = {...filters.value,[key] : value};
-   console.log(filters.value);
+function addFilter(key: string, value: string | string[]) {
+  if (Array.isArray(value)) {
+    filters.value = { ...filters.value, [key]: value.join(',') };
+  } else {
+    filters.value = { ...filters.value, [key]: value };
+  }
    router.get('/manage_users', { page : pagination.value.currentPage, ...filters.value }, { preserveState: true, preserveScroll: true })
 }
 
@@ -157,15 +159,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <UserPlus class="text-white w-4 h-4"/>
                 </Button>
             </div>
-            <div class="grid md:grid-cols-4">
+            <div class="grid md:grid-cols-4 gap-4">
                 <div class="flex justify-center">
-                    <Input type="text" class="m-2" placeholder="Filter By Name" @input="(e : any) => addFilter('name',e.target.value)"/>
+                    <Input type="text" class="flex-1 m-2" placeholder="filter by name" @input="(e : any) => addFilter('name',e.target.value)"/>
                 </div>
                 <div class="flex justify-center">
-                    <Input type="text" class="m-2" placeholder="Filter By Email" @input="(e : any) => addFilter('email',e.target.value)"/>
+                    <Input type="text" class="flex-1 m-2" placeholder="Filter By Email" @input="(e : any) => addFilter('email',e.target.value)"/>
                 </div>
-                <div class="flex justify-center">
-                    <!-- <TagsCombobox v-model="rolesFilter" @update:modelValue="(val) => console.log(rolesFilter)" :data="roleOptions" placeholder="Filter By Roles"/> -->
+                <div class="flex justify-center m-2">
+                    <TagsCombobox class="flex-1" v-model="rolesFilter" :options="roles" placeholder="Filter By Roles"/>
                 </div>
             </div>
             <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto mb-2">

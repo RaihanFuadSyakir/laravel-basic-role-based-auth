@@ -22,7 +22,6 @@ import {
 const props = defineProps<{
   options: string[]
   modelValue: string[]
-  placeholder : string
 }>()
 
 // --- Emits ---
@@ -34,6 +33,14 @@ const emit = defineEmits<{
 const open = ref(false)
 const searchTerm = ref("")
 const selected = ref<string[]>([...props.modelValue]) // local copy
+
+// Sync prop → local when parent changes
+watch(
+  () => props.modelValue,
+  (val) => {
+    selected.value = [...val]
+  }
+)
 
 // Sync local → parent when local changes
 watch(selected, (val) => {
@@ -52,13 +59,14 @@ const filteredOptions = computed(() => {
 // --- Methods ---
 function addValue(val: string) {
   if (!selected.value.includes(val)) {
-    selected.value = [...selected.value,val];
+    selected.value.push(val)
   }
   searchTerm.value = ""
   if (filteredOptions.value.length === 0) {
     open.value = false
   }
 }
+
 function removeValue(val: string) {
   selected.value = selected.value.filter(item => item !== val)
 }
@@ -67,8 +75,8 @@ function removeValue(val: string) {
 <template>
   <Combobox v-model="selected" v-model:open="open" :ignore-filter="true">
     <ComboboxAnchor as-child>
-      <TagsInput v-model="selected" class="px-2 gap-2 w-full py-0">
-      <div v-if="selected.length > 0" class="flex gap-2 mt-2 flex-nowrap items-center">
+      <TagsInput v-model="selected" class="px-2 gap-2 w-80">
+        <div class="flex gap-2 flex-wrap items-center">
           <TagsInputItem
             v-for="item in selected"
             :key="item"
@@ -82,14 +90,14 @@ function removeValue(val: string) {
 
         <ComboboxInput v-model="searchTerm" as-child>
           <TagsInputInput
-            :placeholder="props.placeholder"
-            class="w-full p-0 border-none focus-visible:ring-0 h-auto"
+            placeholder="Select..."
+            class="min-w-[200px] w-full p-0 border-none focus-visible:ring-0 h-auto"
             @keydown.enter.prevent
           />
         </ComboboxInput>
       </TagsInput>
 
-      <ComboboxList class="w-full max-w-md">
+      <ComboboxList class="w-[--reka-popper-anchor-width]">
         <ComboboxEmpty>No results</ComboboxEmpty>
         <ComboboxGroup>
           <ComboboxItem
