@@ -47,8 +47,10 @@ class UserController extends Controller
             ];
         }
         $toSend = [
-            'users' => $result,
-            'roles' => $roles,
+            'data' => [
+                'users' => $result,
+                'roles' => $roles,
+            ],
             'pagination' => [
                 'total' => $users->total(),
                 'currentPage' => $users->currentPage(),

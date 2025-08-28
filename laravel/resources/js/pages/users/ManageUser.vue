@@ -94,22 +94,29 @@ const handleDeleteSubmit = () =>{
     }
 }
 const page = usePage<AppPageProps & {
-  users: User[],
-  roles : Array<string>,
+  data : {
+      users: User[],
+      roles : Array<string>,
+  }
   pagination: {
     total: number,
     currentPage: number,
     lastPage: number
   },
-  permissions : string[]
 }>();
+function fetchData(){
+  router.get('/manage_users',
+      { page : pagination.value.currentPage, ...filters.value },
+      { preserveState: true, preserveScroll: true }
+  )
+}
 const pagination = computed(() => page.props.pagination);
-const users = computed(() => page.props.users);
+const users = computed(() => page.props.data.users);
 const rolesFilter = ref<string[]>([]);
 watch(rolesFilter, (newVal) => {
   addFilter("roles", newVal);
 })
-const roles = page.props.roles;
+const roles = page.props.data.roles;
 const filters = ref<Record<string, string | string[]>>({});
 const hasEditPermission = page.props.auth.permissions.some(
   (perm: string) => perm === "edit_users"
