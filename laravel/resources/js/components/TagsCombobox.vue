@@ -17,7 +17,7 @@ import {
   TagsInputItemDelete,
   TagsInputItemText,
 } from "@/components/ui/tags-input"
-
+import { Filter } from "lucide-vue-next"
 // --- Props ---
 const props = defineProps<{
   options: string[]
@@ -80,7 +80,7 @@ function removeValue(val: string) {
           </TagsInputItem>
         </div>
 
-        <ComboboxInput v-model="searchTerm" as-child>
+        <ComboboxInput v-model="searchTerm" :icon="Filter" as-child>
           <TagsInputInput
             :placeholder="props.placeholder"
             class="w-full p-0 border-none focus-visible:ring-0 h-auto"

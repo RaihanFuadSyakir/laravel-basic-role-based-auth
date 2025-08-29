@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/alert-dialog/index"
 import { toast } from 'vue-sonner';
 import { useForm, configure } from 'vee-validate';
-import { UserPlus } from 'lucide-vue-next';
+import { UserPlus,Filter } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
 import {formUpdateSchema } from '@/lib/users/users_schema';
 import { Input } from '@/components/ui/input';
@@ -53,7 +53,7 @@ const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
     router.put(`/users/${values.id}`,values,{
         onSuccess : () => {
             toast.success('User updated successfully');
-            router.reload({ only: ['users'] });
+            fetchData();
             isEditOpen.value = false;
             userTarget.value = null;
             formUpdate.resetForm();
@@ -83,7 +83,7 @@ const handleDeleteSubmit = () =>{
         router.delete(`/users/${userTarget.value.id}`,{
             onSuccess : () => {
                 toast.success('User deleted successfully');
-                router.reload({ only: ['users'] });
+                fetchData();
                 confirmDelete.value = false;
                 userTarget.value = null;
             },
@@ -123,7 +123,7 @@ const hasEditPermission = page.props.auth.permissions.some(
 )
 const goToPage = (page: number) => {
   if (page < 1 || page > pagination.value.lastPage) return
-  router.get('/manage_users', { page : pagination.value.currentPage, ...filters.value }, { preserveState: true, preserveScroll: true })
+  fetchData();
 }
 function addFilter(key: string, value: string | string[]) {
   if (Array.isArray(value)) {
@@ -131,7 +131,7 @@ function addFilter(key: string, value: string | string[]) {
   } else {
     filters.value = { ...filters.value, [key]: value };
   }
-   router.get('/manage_users', { page : pagination.value.currentPage, ...filters.value }, { preserveState: true, preserveScroll: true })
+  fetchData();
 }
 
 const isCreateOpen = ref(false);
@@ -167,11 +167,29 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Button>
             </div>
             <div class="grid md:grid-cols-4 gap-4">
-                <div class="flex justify-center">
-                    <Input type="text" class="flex-1 m-2" placeholder="filter by name" @input="(e : any) => addFilter('name',e.target.value)"/>
+                <div class="relative flex items-center m-2">
+                  <!-- Icon inside input -->
+                  <Filter class="absolute left-2 size-4 opacity-50 pointer-events-none" />
+
+                  <!-- Input with padding so text doesn't overlap icon -->
+                  <Input
+                    type="text"
+                    placeholder="Filter by name"
+                    class="pl-8"
+                    @input="(e: any) => addFilter('name', e.target.value)"
+                  />
                 </div>
-                <div class="flex justify-center">
-                    <Input type="text" class="flex-1 m-2" placeholder="Filter By Email" @input="(e : any) => addFilter('email',e.target.value)"/>
+                <div class="relative flex items-center m-2">
+                  <!-- Icon inside input -->
+                  <Filter class="absolute left-2 size-4 opacity-50 pointer-events-none" />
+
+                  <!-- Input with padding so text doesn't overlap icon -->
+                  <Input
+                    type="text"
+                    placeholder="Filter by email"
+                    class="pl-8"
+                    @input="(e: any) => addFilter('email', e.target.value)"
+                  />
                 </div>
                 <div class="flex justify-center m-2">
                     <TagsCombobox class="flex-1" v-model="rolesFilter" :options="roles" placeholder="Filter By Roles"/>
