@@ -12,7 +12,8 @@ import {
   PaginationItem,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination/index"
+} from "@/components/ui/pagination/index";
+import { Filter } from 'lucide-vue-next';
 import Input from '@/components/ui/input/Input.vue';
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -60,8 +61,17 @@ const goToPage = (page: number) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
             <div class="grid md:grid-cols-2 gap-4">
-                <div class="flex justify-center">
-                    <Input type="text" class="flex-1 m-2" placeholder="filter by name" @input="(e : any) => addFilter('name',e.target.value)"/>
+                <div class="relative flex items-center m-2">
+                  <!-- Icon inside input -->
+                  <Filter class="absolute left-2 size-4 opacity-50 pointer-events-none" />
+
+                  <!-- Input with padding so text doesn't overlap icon -->
+                  <Input
+                    type="text"
+                    placeholder="Filter by name"
+                    class="pl-8"
+                    @input="(e: any) => addFilter('name', e.target.value)"
+                  />
                 </div>
             </div>
             <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto mb-2">
