@@ -15,7 +15,7 @@ defineProps<{
   <div v-if="!roles || roles.length === 0" class="text-sm text-muted-foreground">—</div>
 
   <!-- If roles exist -->
-  <div v-else class="flex truncate text-xs justify-center">
+  <div v-else class="truncate text-xs">
     <span>{{ roles[0] }}</span>
 
     <!-- Show popover only if more than 1 role -->
