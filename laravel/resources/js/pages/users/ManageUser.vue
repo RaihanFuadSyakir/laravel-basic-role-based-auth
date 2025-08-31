@@ -156,16 +156,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
-            <div class="px-2 flex justify-end">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    class="bg-green-700 hover:bg-green-600"
-                    @click="isCreateOpen = true"
-                    >
-                    <UserPlus class="text-white w-4 h-4"/>
-                </Button>
-            </div>
             <div class="grid md:grid-cols-4 gap-4">
                 <div class="relative flex items-center m-2">
                   <!-- Icon inside input -->
@@ -193,6 +183,16 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
                 <div class="flex justify-center m-2">
                     <TagsCombobox class="flex-1" v-model="rolesFilter" :options="roles" placeholder="Filter By Roles"/>
+                </div>
+                <div class="m-2 flex justify-end items-center">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        class="bg-green-700 hover:bg-green-600"
+                        @click="isCreateOpen = true"
+                        >
+                        <UserPlus class="text-white w-4 h-4"/>
+                    </Button>
                 </div>
             </div>
             <div class="flex flex-1 flex-col gap-4 rounded-xl overflow-x-auto mb-2">
