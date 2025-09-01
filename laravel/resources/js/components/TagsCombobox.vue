@@ -17,12 +17,13 @@ import {
   TagsInputItemDelete,
   TagsInputItemText,
 } from "@/components/ui/tags-input"
-import { Filter } from "lucide-vue-next"
+import { Filter, Search } from "lucide-vue-next"
 // --- Props ---
 const props = defineProps<{
   options: string[]
   modelValue: string[]
-  placeholder : string
+  placeholder : string,
+  variant : "search" | "filter"
 }>()
 
 // --- Emits ---
@@ -68,25 +69,29 @@ function removeValue(val: string) {
   <Combobox v-model="selected" v-model:open="open" :ignore-filter="true">
     <ComboboxAnchor as-child>
       <TagsInput v-model="selected" class="px-2 gap-2 w-full py-0">
-      <div v-if="selected.length > 0" class="flex gap-2 mt-2 flex-nowrap items-center">
-          <TagsInputItem
-            v-for="item in selected"
-            :key="item"
-            :value="item"
-            @delete="removeValue(item)"
-          >
-            <TagsInputItemText />
-            <TagsInputItemDelete />
-          </TagsInputItem>
-        </div>
+      <div class="grid grid-cols-1">
 
-        <ComboboxInput v-model="searchTerm" :icon="Filter" as-child>
-          <TagsInputInput
-            :placeholder="props.placeholder"
-            class="w-full p-0 border-none focus-visible:ring-0 h-auto"
-            @keydown.enter.prevent
-          />
-        </ComboboxInput>
+          <div v-if="selected.length > 0" class="flex gap-2 mt-2 flex-wrap items-center">
+              <TagsInputItem
+                v-for="item in selected"
+                :key="item"
+                :value="item"
+                @delete="removeValue(item)"
+              >
+                <TagsInputItemText />
+                <TagsInputItemDelete />
+              </TagsInputItem>
+            </div>
+
+            <ComboboxInput v-model="searchTerm" :icon="props.variant === 'search' ? Search : Filter" as-child>
+              <TagsInputInput
+                :placeholder="props.placeholder"
+                class="w-full p-0 border-none focus-visible:ring-0 h-auto"
+                @keydown.enter.prevent
+              />
+            </ComboboxInput>
+      </div>
+
       </TagsInput>
 
       <ComboboxList class="w-full max-w-md">
