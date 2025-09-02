@@ -23,7 +23,7 @@ const props = defineProps<{
   options: string[]
   modelValue: string[]
   placeholder : string,
-  variant : "search" | "filter"
+  variant? : "search" | "filter"
 }>()
 
 // --- Emits ---
@@ -83,7 +83,7 @@ function removeValue(val: string) {
               </TagsInputItem>
             </div>
 
-            <ComboboxInput v-model="searchTerm" :icon="props.variant === 'search' ? Search : Filter" as-child>
+            <ComboboxInput v-model="searchTerm" :icon="props.variant && props.variant === 'search' ? Search : Filter" as-child>
               <TagsInputInput
                 :placeholder="props.placeholder"
                 class="w-full p-0 border-none focus-visible:ring-0 h-auto"
