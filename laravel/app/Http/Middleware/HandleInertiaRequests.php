@@ -46,6 +46,10 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $user?->permissions(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-        ];
+            // Add validation errors so Vue can see them
+            'errors' => fn () => $request->session()->get('errors')
+                ? $request->session()->get('errors')->getBag('default')->getMessages()
+                : (object) [],
+            ];
     }
 }
