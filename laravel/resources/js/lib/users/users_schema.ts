@@ -14,6 +14,9 @@ export const formUpdateSchema = toTypedSchema(
       change_password: z.boolean().default(false),
       password: z.string().optional(),
       confirmPassword: z.string().optional(),
+      roles : z
+        .array(z.string())
+        .min(1,{message : 'Atleast need 1 role assigned'})
     })
     .refine(
       (data) => {
@@ -55,6 +58,9 @@ export const formCreateSchema = toTypedSchema(
         .min(8, { message: 'Password must be at least 8 characters' })
         .max(100, { message: 'Password must be less than 100 characters' }),
       confirmPassword: z.string(),
+      roles : z
+        .array(z.string())
+        .min(1,{message : 'Atleast need 1 role assigned'})
     })
     .refine((data) => data.password === data.confirmPassword, {
       path: ['confirmPassword'],

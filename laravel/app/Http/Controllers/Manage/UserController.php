@@ -17,7 +17,7 @@ class UserController extends Controller
         $nameFilter = $request->query('name');
         $emailFilter = $request->query('email');
         $rolesFilter = $request->query('roles');
-        $roles = Role::all()->pluck('name')->toArray();
+        $roles = Role::where('id','>',1)->pluck('name')->toArray();
         $users = User::with('roles')
             ->where('id','!=',1);
         if($nameFilter){
@@ -63,10 +63,23 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:50',
             'email' => 'required|email',
-            'password' => 'required|min:8|max:100'
+            'password' => 'required|min:8|max:100',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'string'
         ]);
+
+        // Hash the password
         $validated['password'] = Hash::make($validated['password']);
+
+        // Create the user
         $user = User::create($validated);
+
+        // Get role IDs from names
+        $roleIds = Role::whereIn('name', $validated['roles'])->pluck('id')->toArray();
+
+        // Attach roles to user
+        $user->roles()->attach($roleIds);
+
         return redirect()->route('users.index')
              ->with('success', 'User created successfully');
     }
@@ -78,12 +91,18 @@ class UserController extends Controller
             'email' => 'required|email',
             'change_password' => 'required|boolean',
             'password' => 'exclude_unless:change_password,true|string|min:8|max:100',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'string'
         ]);
         $user = User::findOrFail($validated['id']);
         if ($validated['change_password']) {
             $validated['password'] = Hash::make($validated['password']);
         }
+        // Get role IDs from names
+        $roleIds = Role::whereIn('name', $validated['roles'])->pluck('id')->toArray();
         $user->update($validated);
+        // Attach roles to user
+        $user->roles()->sync($roleIds);
         return redirect()->route('users.index')
              ->with('success', 'User updated successfully');
     }

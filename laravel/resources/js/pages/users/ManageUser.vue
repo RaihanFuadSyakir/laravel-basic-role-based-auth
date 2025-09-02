@@ -46,7 +46,8 @@ const formUpdate = useForm({
     email: '',
     change_password : false,
     password : '',
-    confirmPassword : ''
+    confirmPassword : '',
+    roles : []
   },
 });
 const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
@@ -78,6 +79,7 @@ function editUser(user: User) {
         id : userTarget.value.id,
         name : userTarget.value.name,
         email : userTarget.value.email,
+        roles : userTarget.value?.roles
     });
     isEditOpen.value = true;
 }
@@ -114,7 +116,10 @@ const handleDeleteSubmit = () =>{
 const page = usePage<AppPageProps & {
   data : {
       users: User[],
-      roles : Array<string>,
+      roles : {
+        id : number,
+        name : string
+      }[],
   }
   pagination: {
     total: number,
@@ -264,10 +269,12 @@ const breadcrumbs: BreadcrumbItem[] = [
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        <CreateUser v-model:isFormOpen="isCreateOpen" />
+        <CreateUser v-model:isFormOpen="isCreateOpen" :roles="roles"/>
         <UpdateUser
             v-model="isEditOpen"
             :form-update="formUpdate"
-            :on-submit="handleUpdateSubmit"/>
+            :on-submit="handleUpdateSubmit"
+            :roles="roles"
+            />
     </AppLayout>
 </template>

@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { computed} from "vue"
+import { computed, ref, watch} from "vue"
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,20 @@ const isOpen = computed({
   get: () => props.modelValue,
   set: (val: boolean) => emit("update:modelValue", val),
 })
+
+const permissionsSelected = ref<string[]>(props.formUpdate.values.permissions ?? [])
+
+// Update form when permissionsSelected changes
+watch(permissionsSelected, (newVal) => {
+  props.formUpdate.setFieldValue("permissions", newVal)
+})
+
+// Sync permissionsSelected with form values whenever modal opens
+watch(isOpen, (open) => {
+  if (open) {
+    permissionsSelected.value = props.formUpdate.values.permissions ?? []
+  }
+})
 </script>
 
 <template>
@@ -62,7 +76,7 @@ const isOpen = computed({
                 :options="props.permissionOptions"
                 variant="search"
                 placeholder="List Permissions"
-                v-bind="componentField"
+                v-model="permissionsSelected"
                 />
             </FormControl>
             <FormMessage />

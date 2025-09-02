@@ -34,7 +34,10 @@ watch(
   () => props.isFormOpen,
   (val) => { open.value = val }
 )
-watch(open, (val) => { emit('update:isFormOpen', val) })
+watch(open, (val) => {
+    emit('update:isFormOpen', val);
+    formCreate.setFieldValue("level",[5]);
+})
 configure({
   validateOnBlur: true, // controls if `blur` events should trigger validation with `handleChange` handler
   validateOnModelUpdate: true, // controls if `update:modelValue` events should trigger validation with `handleChange` handler
@@ -69,6 +72,10 @@ const handleCreateSubmit = formCreate.handleSubmit((values) => {
         }
     })
   });
+const permissionsSelected = ref<string[]>([]);
+watch(permissionsSelected, (newVal) => {
+    formCreate.setFieldValue("permissions",newVal);
+})
 </script>
 <template>
         <Dialog v-model:open="open">
@@ -94,15 +101,15 @@ const handleCreateSubmit = formCreate.handleSubmit((values) => {
                         :options="props.permissionOptions"
                         variant="search"
                         placeholder="List Permissions"
-                        v-bind="componentField"
+                        v-model="permissionsSelected"
                         />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField,value }" name="level">
+                <FormField v-slot="{ componentField, value }" name="level">
                   <FormItem class="mb-2">
-                  <FormLabel>Role's Level : {{value[0]}}</FormLabel>
+                  <FormLabel>Role's Level : {{Array.isArray(value) ? value[0] : value}}</FormLabel>
                     <FormDescription>
                       Choose a role level from <b>1</b> (highest priority) to <b>10</b> (lowest priority).
                     </FormDescription>

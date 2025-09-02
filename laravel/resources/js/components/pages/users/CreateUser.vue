@@ -22,7 +22,8 @@ import { Eye,EyeOff } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ref, watch } from 'vue';
 import { h } from 'vue';
-const props = defineProps<{ isFormOpen: boolean }>();
+import TagsCombobox from '@/components/TagsCombobox.vue';
+const props = defineProps<{ isFormOpen: boolean, roles : string[] }>();
 const emit = defineEmits<{ (e: 'update:isFormOpen', value: boolean): void }>()
 const open = ref(props.isFormOpen)
 // sync prop -> local
@@ -41,7 +42,8 @@ const formCreate = useForm({
     name: '',
     email: '',
     password : '',
-    confirmPassword : ''
+    confirmPassword : '',
+    roles : []
   },
 });
 const handleCreateSubmit = formCreate.handleSubmit((values) => {
@@ -69,6 +71,10 @@ const handleCreateSubmit = formCreate.handleSubmit((values) => {
   });
 const showPassword = ref(false);
 const showConfirm = ref(false);
+const rolesSelected = ref<string[]>([]);
+watch(rolesSelected, (newVal) => {
+    formCreate.setFieldValue("roles",newVal);
+})
 </script>
 <template>
         <Dialog v-model:open="open">
@@ -91,6 +97,20 @@ const showConfirm = ref(false);
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="you@example.com" v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="roles">
+                  <FormItem class="mb-2">
+                    <FormLabel>{{componentField.name}}</FormLabel>
+                    <FormControl>
+                        <TagsCombobox
+                            v-model="rolesSelected"
+                            :options="props.roles"
+                            placeholder="Assign role to user"
+                            variant="search"
+                        />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,7 +139,6 @@ const showConfirm = ref(false);
                     <FormMessage />
                   </FormItem>
                 </FormField>
-
                 <!-- Confirm Password -->
                 <FormField v-slot="{ componentField }" name="confirmPassword">
                   <FormItem class="mb-2">

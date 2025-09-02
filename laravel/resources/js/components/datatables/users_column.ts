@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { User } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, ArrowUpDown, ChevronDown } from "lucide-vue-next";
-import UserRoles from '@/components/UserRoles.vue'
+import ExpandPopover from '@/components/ExpandPopover.vue';
 export const userColumns = ({hasEditPermission , onEdit, onDelete }:
     {
       hasEditPermission : Boolean;
@@ -45,7 +45,9 @@ export const userColumns = ({hasEditPermission , onEdit, onDelete }:
     },
     cell: ({ row }) => {
     const roles = row.getValue('roles') as string[] | null | undefined;
-    return h(UserRoles, { roles })
+    return h('div', {},
+            h(ExpandPopover,{title : roles?.length.toString() ?? "",data: roles ?? []})
+    );
     },
   },
   ...(hasEditPermission ? [{

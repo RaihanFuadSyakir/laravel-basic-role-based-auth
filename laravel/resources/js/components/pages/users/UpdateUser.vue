@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import {
   Dialog,
   DialogContent,
@@ -19,11 +19,13 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff } from "lucide-vue-next"
 import { FormContext } from "vee-validate"
+import TagsCombobox from "@/components/TagsCombobox.vue"
 
 interface Props {
   modelValue: boolean
   formUpdate: FormContext<Record<string, any>>
-  onSubmit: () => void
+  onSubmit: () => void,
+  roles : string[]
 }
 
 const props = defineProps<Props>()
@@ -35,6 +37,17 @@ const showConfirm = ref(false)
 const isOpen = computed({
   get: () => props.modelValue,
   set: (val: boolean) => emit("update:modelValue", val),
+})
+const rolesSelected = ref<string[]>(props.formUpdate.values.roles ?? [])
+// Update form when rolesSelected changes
+watch(rolesSelected, (newVal) => {
+  props.formUpdate.setFieldValue("roles", newVal)
+})
+// Sync rolesSelected with form values whenever modal opens
+watch(isOpen, (open) => {
+  if (open) {
+    rolesSelected.value = props.formUpdate.values.roles ?? []
+  }
 })
 </script>
 
@@ -71,7 +84,20 @@ const isOpen = computed({
             <FormMessage />
           </FormItem>
         </FormField>
-
+        <FormField v-slot="{ componentField }" name="roles">
+          <FormItem class="mb-2">
+            <FormLabel>{{componentField.name}}</FormLabel>
+            <FormControl>
+                <TagsCombobox
+                    v-model="rolesSelected"
+                    :options="props.roles"
+                    placeholder="Assign role to user"
+                    variant="search"
+                />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
         <!-- Change Password Checkbox -->
         <FormField v-slot="{ componentField }" name="change_password" type="checkbox">
           <FormItem class="flex items-center gap-2 mb-2">

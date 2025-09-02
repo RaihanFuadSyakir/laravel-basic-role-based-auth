@@ -34,14 +34,14 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
 export interface Role {
     id : number,
     name : string;
-    permissions : string[];
+    permissions? : string[];
     level : number
 };
 export interface User {
     id: number;
     name: string;
     email: string;
-    roles? : Role[];
+    roles? : string[];
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;
