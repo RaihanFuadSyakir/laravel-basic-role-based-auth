@@ -67,10 +67,10 @@ class UserController extends Controller
         ]);
         $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
-        return redirect()->route('manage_users')
+        return redirect()->route('users.index')
              ->with('success', 'User created successfully');
     }
-    public function update(Request $request){
+    public function update(Request $request,$id){
         $request->merge(['id' => $id]);
         $validated = $request->validate([
             'id' => 'required|integer|min:2|exists:users,id',
@@ -84,7 +84,7 @@ class UserController extends Controller
             $validated['password'] = Hash::make($validated['password']);
         }
         $user->update($validated);
-        return redirect()->route('manage_users')
+        return redirect()->route('users.index')
              ->with('success', 'User updated successfully');
     }
     public function delete(Request $request, $id)
@@ -101,7 +101,7 @@ class UserController extends Controller
         $user->delete();
 
         // Redirect back with success message
-        return redirect()->route('manage_users')
+        return redirect()->route('users.index')
             ->with('success', 'User deleted successfully');
     }
 }

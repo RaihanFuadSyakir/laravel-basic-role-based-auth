@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends Model
 {
-    protected $fillable = ['name', 'label'];
+    protected $fillable = ['name', 'label','level'];
 
     public function permissions()
     {

@@ -24,7 +24,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $viewAssets = Permission::firstOrCreate(['name' => 'view_assets']);
         $editAssets = Permission::firstOrCreate(['name' => 'edit_assets']);
         // Create role
-        $manager = Role::firstOrCreate(['name' => 'Manager','level' => 1]);
+        $manager = Role::firstOrCreate(['name' => 'Manager','level' => 0]);
         $manager->permissions()->sync([
             $viewUsers->id,
             $editUsers->id,
