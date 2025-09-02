@@ -4,7 +4,7 @@ import { AppPageProps, Role, type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { roleColumns } from '@/components/datatables/roles_column';
 import DataTable from '@/components/datatables/DataTable.vue';
-import { computed } from 'vue';
+import { computed, h } from 'vue';
 import { ref } from 'vue';
 import {
   Pagination,
@@ -14,8 +14,18 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination/index"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog/index"
 import Input from '@/components/ui/input/Input.vue';
-import { Filter } from 'lucide-vue-next';
+import { Filter, Plus } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import { formUpdateSchema } from '@/lib/roles/roles_schema';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -26,7 +36,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/manage_roles',
     },
 ];
+import CreateRole from '@/components/pages/roles/CreateRole.vue';
+import UpdateRole from '@/components/pages/roles/UpdateRole.vue';
 import TagsCombobox from '@/components/TagsCombobox.vue';
+import { Button } from '@/components/ui/button';
 const page = usePage< AppPageProps & {
  data : {
   roles : Role[],
@@ -49,18 +62,50 @@ const formUpdate = useForm({
     initialValues : {
         id : 0,
         name : '',
-        permissions : []
+        permissions : [],
+        level : [5]
     }
 });
 const roleTarget = ref<Role | null>(null);
 const isEditOpen = ref(false);
 const confirmDelete = ref(false);
+const column = roleColumns({
+    hasEditPermission : hasEditPermission,
+    onEdit : onEdit,
+    onDelete : onDelete
+    });
+const isCreateOpen = ref(false);
+
+const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
+    router.put(`/roles/${values.id}`,{...values,level : values.level[0]},{
+        onSuccess : () => {
+            toast.success('Role updated successfully');
+            fetchData();
+            isEditOpen.value = false;
+            roleTarget.value = null;
+            formUpdate.resetForm();
+        },
+        onError : (errors) => {
+          const messages = Object.values(errors).flat()
+          toast.error("Error", {
+              description: h(
+                "div",
+                { class: "space-y-1" }, // spacing between lines
+                messages.map((msg) =>
+                  h("p", { class: "text-red-500 text-sm" }, msg)
+                )
+              ),
+           })
+        }
+    })
+  })
 function onEdit(role: Role) {
     roleTarget.value = role;
     formUpdate.setValues({
         id : roleTarget.value.id,
         name : roleTarget.value.name,
         permissions : roleTarget.value.permissions,
+        level : [roleTarget.value.level]
     });
     isEditOpen.value = true;
 }
@@ -70,31 +115,26 @@ function onDelete(role : Role) {
     confirmDelete.value = true;
   // e.g. router.delete(`/users/${id}`)
 }
-const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
-    router.put(`/roles/${values.id}`,values,{
-        onSuccess : () => {
-            toast.success('Role updated successfully');
-            fetchData();
-            isEditOpen.value = false;
-            roleTarget.value = null;
-            formUpdate.resetForm();
-        },
-        onError : () => {
-            toast.error('Update unexpected error');
-        }
-    })
-  })
 const handleDeleteSubmit = () =>{
     if(roleTarget.value){
         router.delete(`/roles/${roleTarget.value.id}`,{
             onSuccess : () => {
-                toast.success('Role deleted successfully');
-                fetchData();
+            toast.success('Role deleted successfully');
+            router.reload({ only: ['roles'] });
                 confirmDelete.value = false;
                 roleTarget.value = null;
             },
-            onError : () => {
-                toast.error('Update unexpected error');
+            onError : (errors) => {
+              const messages = Object.values(errors).flat()
+              toast.error("Error", {
+                  description: h(
+                    "div",
+                    { class: "space-y-1" }, // spacing between lines
+                    messages.map((msg) =>
+                      h("p", { class: "text-red-500 text-sm" }, msg)
+                    )
+                  ),
+               })
             }
         });
     }
@@ -117,19 +157,13 @@ const goToPage = (page: number) => {
   if (page < 1 || page > pagination.value.lastPage) return
   fetchData();
 }
-const column = roleColumns({
-    hasEditPermission : hasEditPermission,
-    onEdit : onEdit,
-    onDelete : onDelete
-    });
 </script>
 <template>
     <Head title="Manage Roles" />
-
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
             <div class="grid md:grid-cols-3 gap-4">
-                <div class="md:ml-4 m-2 flex items-center">
+                <div class="my-2 flex items-center">
                     <div class="relative flex items-center flex-1">
                       <!-- Icon inside input -->
                       <Filter class="absolute left-2 size-4 opacity-50 pointer-events-none" />
@@ -146,8 +180,18 @@ const column = roleColumns({
                 <div class="flex justify-center m-2">
                     <TagsCombobox class="flex-1" v-model="permissionsFilter" :options="permissions" placeholder="Filter By Permissions"/>
                 </div>
+                <div class="m-2 flex justify-end items-center">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        class="bg-green-700 hover:bg-green-600"
+                        @click="isCreateOpen = true"
+                        >
+                        <Plus class="text-white w-4 h-4"/>
+                    </Button>
+                </div>
             </div>
-            <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
+            <div class="flex h-full flex-1 flex-col gap-4 rounded-xl overflow-x-auto">
                 <DataTable :columns="column" :data="roles" />
             </div>
             <div v-if="pagination" class="flex justify-end">
@@ -184,5 +228,26 @@ const column = roleColumns({
                 </Pagination>
             </div>
         </div>
+        <AlertDialog v-if="confirmDelete" v-model:open="confirmDelete">
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                Please confirm <span class="text-red-400">delete</span> role with name <span class="text-black">{{roleTarget.name}}</span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction @click="handleDeleteSubmit">Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        <CreateRole v-model:isFormOpen="isCreateOpen" :permission-options="permissions"/>
+        <UpdateRole
+            v-model="isEditOpen"
+            :form-update="formUpdate"
+            :permission-options="permissions"
+            :on-submit="handleUpdateSubmit"
+            />
     </AppLayout>
 </template>
