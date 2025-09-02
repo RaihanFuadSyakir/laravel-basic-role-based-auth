@@ -5,7 +5,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { User } from '@/types';
 import { userColumns } from '@/components/datatables/users_column';
 import DataTable from '@/components/datatables/DataTable.vue';
-import { computed, ref, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
   Pagination,
@@ -58,8 +58,17 @@ const handleUpdateSubmit = formUpdate.handleSubmit((values) => {
             userTarget.value = null;
             formUpdate.resetForm();
         },
-        onError : () => {
-            toast.error('Update unexpected error');
+        onError : (errors) => {
+          const messages = Object.values(errors).flat()
+          toast.error("Error", {
+              description: h(
+                "div",
+                { class: "space-y-1" }, // spacing between lines
+                messages.map((msg) =>
+                  h("p", { class: "text-red-500 text-sm" }, msg)
+                )
+              ),
+           })
         }
     })
   })
@@ -87,9 +96,18 @@ const handleDeleteSubmit = () =>{
                 confirmDelete.value = false;
                 userTarget.value = null;
             },
-            onError : () => {
-                toast.error('Update unexpected error');
-            }
+            onError : (errors) => {
+              const messages = Object.values(errors).flat()
+              toast.error("Error", {
+                  description: h(
+                    "div",
+                    { class: "space-y-1" }, // spacing between lines
+                    messages.map((msg) =>
+                      h("p", { class: "text-red-500 text-sm" }, msg)
+                    )
+                  ),
+               })
+        }
         });
     }
 }
@@ -157,7 +175,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
             <div class="grid md:grid-cols-4 gap-4">
-                <div class="relative flex items-center m-2">
+                <div class="relative flex items-center my-2">
                   <!-- Icon inside input -->
                   <Filter class="absolute left-2 size-4 opacity-50 pointer-events-none" />
 
@@ -247,6 +265,9 @@ const breadcrumbs: BreadcrumbItem[] = [
             </AlertDialogContent>
           </AlertDialog>
         <CreateUser v-model:isFormOpen="isCreateOpen" />
-        <UpdateUser v-model="isEditOpen" :form-update="formUpdate" :on-submit="handleUpdateSubmit"/>
+        <UpdateUser
+            v-model="isEditOpen"
+            :form-update="formUpdate"
+            :on-submit="handleUpdateSubmit"/>
     </AppLayout>
 </template>

@@ -21,6 +21,7 @@ import {
 import { Eye,EyeOff } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ref, watch } from 'vue';
+import { h } from 'vue';
 const props = defineProps<{ isFormOpen: boolean }>();
 const emit = defineEmits<{ (e: 'update:isFormOpen', value: boolean): void }>()
 const open = ref(props.isFormOpen)
@@ -51,9 +52,18 @@ const handleCreateSubmit = formCreate.handleSubmit((values) => {
             emit('update:isFormOpen', false);
             formCreate.resetForm();
         },
-        onError : (e) => {
-            toast.error('Update unexpected error');
-        }
+            onError : (errors) => {
+              const messages = Object.values(errors).flat()
+              toast.error("Error", {
+                  description: h(
+                    "div",
+                    { class: "space-y-1" }, // spacing between lines
+                    messages.map((msg) =>
+                      h("p", { class: "text-red-500 text-sm" }, msg)
+                    )
+                  ),
+               })
+            }
     })
 
   });
@@ -135,7 +145,7 @@ const showConfirm = ref(false);
                   </FormItem>
                 </FormField>
                 <DialogFooter>
-                    <Button variant="outline" class="bg-green-700 hover:bf-green-600 text-white" type="submit">Save changes</Button>
+                    <Button variant="outline" class="bg-green-700 hover:bf-green-600 text-white" type="submit">Save</Button>
                 </DialogFooter>
               </form>
 
