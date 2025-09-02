@@ -38,7 +38,9 @@ const selected = ref<string[]>([...props.modelValue]) // local copy
 
 // Sync local → parent when local changes
 watch(selected, (val) => {
-  emit("update:modelValue", val)
+if (Array.isArray(val)) {
+    emit("update:modelValue", val);
+  }
 })
 
 // --- Filtered list ---
@@ -83,7 +85,10 @@ function removeValue(val: string) {
               </TagsInputItem>
             </div>
 
-            <ComboboxInput v-model="searchTerm" :icon="props.variant && props.variant === 'search' ? Search : Filter" as-child>
+            <ComboboxInput
+                v-model="searchTerm"
+                :icon="props.variant && props.variant === 'search' ? Search : Filter"
+                as-child>
               <TagsInputInput
                 :placeholder="props.placeholder"
                 class="w-full p-0 border-none focus-visible:ring-0 h-auto"

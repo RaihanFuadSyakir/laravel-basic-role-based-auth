@@ -177,7 +177,7 @@ const goToPage = (page: number) => {
                       />
                     </div>
                 </div>
-                <div class="flex justify-center m-2">
+                <div class="flex justify-center my-2">
                     <TagsCombobox class="flex-1" v-model="permissionsFilter" :options="permissions" placeholder="Filter By Permissions"/>
                 </div>
                 <div class="m-2 flex justify-end items-center">
