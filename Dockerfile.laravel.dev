@@ -10,11 +10,5 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install \
         pdo pdo_mysql pgsql pdo_pgsql mbstring zip exif pcntl bcmath gd intl
 
-# Install Node.js (v22) + npm
-RUN curl -fsSL https://nodejs.org/dist/v22.18.0/node-v22.18.0-linux-x64.tar.xz -o node.tar.xz \
-    && tar -xf node.tar.xz -C /usr/local --strip-components=1 \
-    && rm node.tar.xz \
-    && npm install -g npm@latest
-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

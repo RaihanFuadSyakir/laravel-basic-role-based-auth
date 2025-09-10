@@ -20,6 +20,8 @@ services:
     working_dir : /app
     ports:
       - "7004:7004"
+    env_file:
+      - .env
     volumes:
       - ./laravel:/app
   postgres:

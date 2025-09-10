@@ -2,8 +2,9 @@ import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
-const host = 'localhost';
-const port = 7004;
+const env = process.env;
+const host = env.VITE_HOST || 'localhost';
+const port = parseInt(env.VITE_PORT || '8000', 10);
 export default defineConfig({
     plugins: [
         laravel({
