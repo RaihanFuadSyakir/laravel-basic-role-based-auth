@@ -1,4 +1,4 @@
-# Laravel Asset Management Simulation
+# Laravel Basuc Role Based Simulation
 ## Tech
 - Docker & Docker Compose
 - Php 8.2 & Composer
