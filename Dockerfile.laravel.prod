@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy Laravel app (excluding node_modules since we don't need it in prod)
 COPY ./laravel .
+COPY ./laravel/.env .
 RUN composer install
 # Copy built assets from frontend stage
 COPY --from=frontend /app/public/build /app/public/build
