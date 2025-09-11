@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.laravel.dev
-    container_name: lasm_app
+    container_name: lasm_dev_app
 #    ports:
 #      - "7004:8000"
     volumes:
@@ -11,12 +11,12 @@ services:
     depends_on:
       - postgres
     networks:
-      - network-lasm
+      - network-lasm_dev
   node:
     build:
       context: .
       dockerfile: Dockerfile.node.dev
-    container_name: lasm_nodejs
+    container_name: lasm_dev_nodejs
     working_dir : /app
     ports:
       - "7004:7004"
@@ -26,7 +26,7 @@ services:
       - ./laravel:/app
   postgres:
     image: postgres:15
-    container_name: lasm_postgres
+    container_name: lasm_dev_postgres
     restart: always
     ports:
       - "7002:5432"
@@ -39,12 +39,12 @@ services:
     volumes:
       - .pg_data:/var/lib/postgresql/data
     networks:
-      - network-lasm
+      - network-lasm_dev
   nginx:
     build:
       context : .
       dockerfile : Dockerfile.nginx
-    container_name: lasm_nginx
+    container_name: lasm_dev_nginx
     ports:
       - "7001:80"
     volumes:
@@ -53,11 +53,11 @@ services:
     depends_on:
       - app
     networks:
-      - network-lasm
+      - network-lasm_dev
 volumes:
   pg_data:
 networks:
-  network-lasm:
-    name: network-lasm
+  network-lasm_dev:
+    name: network-lasm_dev
     driver: bridge
 
