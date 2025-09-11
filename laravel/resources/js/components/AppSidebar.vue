@@ -86,9 +86,9 @@ const footerNavItems: NavItem[] = [
             <NavMain :items="filteredNavItems" />
         </SidebarContent>
 
-        <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
-        </SidebarFooter>
+        <!-- <SidebarFooter> -->
+        <!-- <NavFooter :items="footerNavItems" /> -->
+        <!-- </SidebarFooter> -->
     </Sidebar>
     <slot />
 </template>
