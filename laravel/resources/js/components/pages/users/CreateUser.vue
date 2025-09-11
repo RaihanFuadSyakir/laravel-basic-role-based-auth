@@ -29,7 +29,12 @@ const open = ref(props.isFormOpen)
 // sync prop -> local
 watch(
   () => props.isFormOpen,
-  (val) => { open.value = val }
+  (val) => {
+    open.value = val
+    if(val){
+        formCreate.resetForm();
+    }
+  }
 )
 watch(open, (val) => { emit('update:isFormOpen', val) })
 configure({
