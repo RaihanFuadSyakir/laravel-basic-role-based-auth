@@ -6,6 +6,8 @@ services:
     container_name: lasm_prod_app
 #    ports:
 #      - "7004:8000"
+    env_file:
+      - ./laravel/.env
     volumes:
       - laravel_app:/app
       #- ./laravel:/app
