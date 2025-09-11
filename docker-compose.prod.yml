@@ -10,6 +10,7 @@ services:
       - ./laravel/.env
     volumes:
       - laravel_app:/app
+      - ./laravel/.env:/app/.env:ro
       #- ./laravel:/app
     depends_on:
       - postgres
