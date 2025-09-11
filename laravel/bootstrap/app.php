@@ -43,7 +43,12 @@ return Application::configure(basePath: dirname(__DIR__))
                         'message' => 'The page expired, please try again.',
                     ]);
                 }
-
+                if ($response->getStatusCode() === 500) {
+                    // Transform raw 500 into something Inertia can show
+                    return back()->withErrors([
+                        'message' => 'An unexpected error occurred.',
+                    ]);
+                }
                 return $response;
             });
     })->create();
