@@ -2,10 +2,10 @@
 
 FROM node:22.18.0-alpine3.22 AS frontend
 WORKDIR /app
-COPY package*.json vite.config.* ./
+COPY ./laravel/package*.json ./laravel/vite.config.* ./
 RUN npm install
-COPY resources ./laravel/resources
-COPY public ./laravel/public
+COPY ./laravel/resources ./resources
+COPY ./laravel/public ./public
 RUN npm run build
 
 # Stage 2: PHP container
@@ -14,15 +14,16 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git unzip zip curl libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
-    && docker-php-ext-install \
-        pdo pdo_mysql pgsql pdo_pgsql mbstring zip exif pcntl bcmath gd
+    git unzip zip curl \
+    libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
+    libicu-dev \
+ && docker-php-ext-install \
+    pdo pdo_mysql pgsql pdo_pgsql mbstring zip exif pcntl bcmath gd intl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Copy Laravel app (excluding node_modules since we don't need it in prod)
-COPY . .
-
+COPY ./laravel .
+RUN composer install
 # Copy built assets from frontend stage
-COPY --from=frontend /app/public/build ./public/build
+COPY --from=frontend /app/public/build /app/public/build
