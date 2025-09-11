@@ -6,8 +6,8 @@ services:
     container_name: lasm_prod_app
 #    ports:
 #      - "7004:8000"
-    volumes:
-      - ./laravel:/app
+#    volumes:
+#      - ./laravel:/app
     depends_on:
       - postgres
     networks:
